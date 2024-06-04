@@ -1,10 +1,10 @@
 diff --git a/src/syscall/js/js.go b/src/syscall/js/js.go
-index 74c02cd..96dd875 100644
+index f7e32eb366..aa9f9a4c6e 100644
 --- a/src/syscall/js/js.go
 +++ b/src/syscall/js/js.go
-@@ -685,3 +685,8 @@ func CopyBytesToJS(dst Value, src []byte) int {
+@@ -598,3 +598,8 @@ func CopyBytesToJS(dst Value, src []byte) int {
+ 
  //go:wasmimport gojs syscall/js.copyBytesToJS
- //go:noescape
  func copyBytesToJS(dst ref, src []byte) (int, bool)
 +
 +// Import performs a dynamic import() of the module specifier.
