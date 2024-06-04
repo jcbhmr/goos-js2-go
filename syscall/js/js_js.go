@@ -10,6 +10,7 @@ type Func = js.Func
 type Type = js.Type
 type Value = js.Value
 type ValueError = js.ValueError
+
 var CopyBytesToGo = js.CopyBytesToGo
 var CopyBytesToJS = js.CopyBytesToJS
 var FuncOf = js.FuncOf
@@ -31,20 +32,4 @@ var jsGo = func(id uint32, typeFlag byte) Value {
 
 func Import(specifier any, options any) Value {
 	return jsGo.Call("_import", specifier, options)
-}
-
-var jsPromiseConstructor = Global().Get("Promise")
-
-func Await(v Value) Value {
-	jsPromise := jsPromiseConstructor.Call("resolve", v)
-	c := make(chan Value)
-	jsHandleResolve := FuncOf(func(this Value, args []Value) any {
-		c <- args[0]
-		return Value{}
-	})
-	jsHandleReject := FuncOf(func(this Value, args []Value) any {
-		panic(&Error{Value: args[0]})
-	})
-	jsPromise.Call("then", jsHandleResolve, jsHandleReject)
-	return <-c
 }
