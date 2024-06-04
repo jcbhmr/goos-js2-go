@@ -2,15 +2,13 @@ package main
 
 import (
 	_ "embed"
-	"errors"
 	"fmt"
-	"io/fs"
 	"log"
 	"os"
-	"path/filepath"
 	"runtime"
 
 	"github.com/adrg/xdg"
+	os2 "github.com/jcbhmr/goos-js2-go/internal/os"
 	exec "golang.org/x/sys/execabs"
 )
 
@@ -29,88 +27,7 @@ func CreateCustomizedGOROOT() error {
 		return err
 	}
 
-	// Pseudo-copy the GOROOT directory (the native original Go toolchain installation) using as many symlinks
-	// as possible to our new custom GOROOT directory. This new custom GOROOT directory will have go.patch applied
-	// which will change some of the src/... files but none of the src/cmd/... files.
-	err = filepath.WalkDir(filepath.Join(runtime.GOROOT()), func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-
-		pathRel, err := filepath.Rel(runtime.GOROOT(), path)
-		if err != nil {
-			return err
-		}
-		// log.Printf("pathRel=%#+v", pathRel)
-		if pathRel == "." {
-			return nil
-		}
-
-		// If it's src/, copy all the contents (except src/cmd/ which is symlinked) and skip further crawling.
-		if pathRel == "src" {
-			err = os.Mkdir(filepath.Join(customizedGOROOT, pathRel), 0755)
-			if err != nil && !errors.Is(err, fs.ErrExist) {
-				return err
-			}
-
-			err = filepath.WalkDir(filepath.Join(runtime.GOROOT(), pathRel), func(path string, d fs.DirEntry, err error) error {
-				if err != nil {
-					return err
-				}
-
-				pathRel, err := filepath.Rel(runtime.GOROOT(), path)
-				if err != nil {
-					return err
-				}
-				// log.Printf("pathRel=%#+v", pathRel)
-				if pathRel == "." {
-					return nil
-				}
-
-				if pathRel == filepath.Join("src", "cmd") || pathRel == filepath.Join("src", "vendor") || pathRel == filepath.Join("src", "testdata") {
-					err = os.Symlink(path, filepath.Join(customizedGOROOT, pathRel))
-					if err != nil && !errors.Is(err, fs.ErrExist) {
-						return err
-					}
-					if d.IsDir() {
-						return filepath.SkipDir
-					} else {
-						return nil
-					}
-				} else if d.IsDir() {
-					err = os.Mkdir(filepath.Join(customizedGOROOT, pathRel), 0755)
-					if err != nil && !errors.Is(err, fs.ErrExist) {
-						return err
-					} else {
-						return nil
-					}
-				} else if len(filepath.SplitList(pathRel)) == 1 {
-					err = os.Symlink(path, filepath.Join(customizedGOROOT, pathRel))
-					if err != nil && !errors.Is(err, fs.ErrExist) {
-						return err
-					} else {
-						return nil
-					}
-				} else {
-					return os.WriteFile(filepath.Join(customizedGOROOT, pathRel), goPatch, 0644)
-				}
-			})
-			if err != nil {
-				return err
-			}
-			return filepath.SkipDir
-		} else {
-			err = os.Symlink(path, filepath.Join(customizedGOROOT, pathRel))
-			if err != nil && !errors.Is(err, fs.ErrExist) {
-				return err
-			}
-			if d.IsDir() {
-				return filepath.SkipDir
-			} else {
-				return nil
-			}
-		}
-	})
+	err = os2.CopyFS(customizedGOROOT, os.DirFS(runtime.GOROOT()))
 	if err != nil {
 		return err
 	}
