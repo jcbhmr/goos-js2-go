@@ -18,6 +18,15 @@ var Null = js.Null
 var Undefined = js.Undefined
 var ValueOf = js.ValueOf
 
+const TypeBoolean = js.TypeBoolean
+const TypeFunction = js.TypeFunction
+const TypeNull = js.TypeNull
+const TypeNumber = js.TypeNumber
+const TypeObject = js.TypeObject
+const TypeString = js.TypeString
+const TypeSymbol = js.TypeSymbol
+const TypeUndefined = js.TypeUndefined
+
 var jsGo = func(id uint32, typeFlag byte) Value {
 	type ref uint64
 	const nanHead = 0x7FF80000

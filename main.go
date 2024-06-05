@@ -48,7 +48,7 @@ func main() {
 
 	app_wasm_gz_base64 := base64.StdEncoding.EncodeToString(app_wasm_gz.Bytes())
 
-	prelude := `//usr/bin/true; exec ${JS:-js} "$0" "$@"` + "\n" + `const __APP_WASM_GZ_BASE64__="` + app_wasm_gz_base64 + `";` + "\n"
+	prelude := `//usr/bin/true; exec ${JSBIN:-node} "$0" "$@"` + "\n" + `const __APP_WASM_GZ_BASE64__="` + app_wasm_gz_base64 + `";` + "\n"
 
 	app_js := prelude + gort0_js_wasm_min_js
 
