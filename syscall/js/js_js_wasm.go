@@ -33,7 +33,7 @@ func Import(specifier any, options any) Value {
 	return jsGo.Call("_import", specifier, options)
 }
 
-var jsImportMeta = jsGo.Get("importMeta")
+var jsImportMeta = jsGo.Get("_importMeta")
 
 func ImportMeta() Value {
 	return jsImportMeta
