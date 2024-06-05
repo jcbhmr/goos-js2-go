@@ -14,7 +14,6 @@ type ValueError = js.ValueError
 var CopyBytesToGo = js.CopyBytesToGo
 var CopyBytesToJS = js.CopyBytesToJS
 var FuncOf = js.FuncOf
-var Global = js.Global
 var Null = js.Null
 var Undefined = js.Undefined
 var ValueOf = js.ValueOf
@@ -32,4 +31,16 @@ var jsGo = func(id uint32, typeFlag byte) Value {
 
 func Import(specifier any, options any) Value {
 	return jsGo.Call("_import", specifier, options)
+}
+
+var jsImportMeta = jsGo.Get("importMeta")
+
+func ImportMeta() Value {
+	return jsImportMeta
+}
+
+var jsGlobalThis = js.Global().Get("globalThis")
+
+func Global() Value {
+	return jsGlobalThis
 }

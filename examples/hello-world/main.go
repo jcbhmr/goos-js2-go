@@ -1,7 +1,7 @@
 package main
 
-import "syscall/js"
+import "github.com/jcbhmr/goos-js2-go/syscall/js"
 
 func main() {
-	js.Import("wasd")
+	
 }
